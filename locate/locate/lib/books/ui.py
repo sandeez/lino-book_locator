@@ -2,7 +2,7 @@ from django.db.models import Count, Q
 
 from lino.api import dd
 
-from .models import Book
+from .models import BookInfo
 
 
 class Floors(dd.Table):
@@ -52,28 +52,24 @@ class Publications(dd.Table):
     order_by = ['name']
 
 
-class Books(dd.Table):
-    model = 'Book'
+class BookInformation(dd.Table):
+    model = 'BookInfo'
     column_names = 'name author publication category copies'
-    order_by = ['name']
-    # detail_layout = '''
-    # name author publication category copies
-    # BooksByAuthor
-    # '''
-    # insert_layout = '''
-    # name author publication
-    # category copies
-    # '''
+    order_by = ['name', 'author', 'publication', 'category']
+    detail_layout = '''
+    name author publication category copies
+    BooksInfoByAuthor
+    '''
 
 
-class BooksByAuthor(Books):
+class BooksInfoByAuthor(BookInformation):
     master_key = 'author'
 
 
-class BookInfomation(dd.Table):
-    model = 'BookInfo'
+class Books(dd.Table):
+    model = 'Book'
     column_names = 'code info info__author info__publication info__category'
-    order_by = ['code']
+    order_by = ['code', 'info', 'info__author', 'info__publication', 'info__category']
 
 
 class BooksLocation(dd.Table):
@@ -88,17 +84,18 @@ class BooksLocation(dd.Table):
 
 class BooksLocationByBook(BooksLocation):
     master_key = 'book'
-    column_names = 'book book__info book__info__author book__info__publication book__info__category'
+    column_names = 'book book__info'
 
 
 class BooksLocationBySlot(BooksLocation):
     master_key = 'slot'
-    column_names = 'slot slot__rack slot__rack__bookshelf slot__rack__bookshelf__room slot__rack__bookshelf__room__floor'
+    column_names = 'slot slot__rack'
 
 
 class AvailableSlots(Slots):
-    label = "Available Slots"
-    order_by = ['number', 'rack', 'rack__bookshelf', 'rack__bookshelf__room', 'rack__bookshelf__room__floor']
+    label = 'Available Slots'
+    column_names = 'number rack'
+    order_by = ['number', 'rack']
 
     @classmethod
     def get_request_queryset(cls, ar):
@@ -112,7 +109,7 @@ class BooksToBeTagged(dd.VirtualTable):
 
     @classmethod
     def get_data_rows(cls, ar):
-        qs_book_info = Book.objects.values('name', 'copies').annotate(count=Count('bookinfo'))
+        qs_book_info = BookInfo.objects.values('name', 'copies').annotate(count=Count('book'))
         qs_book_to_be_tagged = []
         for item in qs_book_info:
             if item['count'] < item['copies']:
@@ -133,8 +130,10 @@ class BooksToBeTagged(dd.VirtualTable):
         return str(row['count'])
 
 
-class BooksToBeArranged(BookInfomation):
+class BooksToBeArranged(Books):
     label = "Books to be Arranged"
+    column_names = 'code info'
+    order_by = ['code', 'info']
 
     @classmethod
     def get_request_queryset(cls, ar):

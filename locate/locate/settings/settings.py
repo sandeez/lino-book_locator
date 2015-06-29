@@ -1,7 +1,8 @@
 from lino.projects.std.settings import *
 
 class Site(Site):
-    title = 'Locate'
+    title = 'Book Locator'
+    demo_fixtures = ['init_setup_data']
 
     def setup_menu(self, profile, main):
         # set Admin menu
@@ -20,8 +21,8 @@ class Site(Site):
         sm2.add_action(self.modules.books.Categories)
         sm2.add_action(self.modules.books.Publications)
         sm2.add_action(self.modules.books.Authors)
+        sm2.add_action(self.modules.books.BookInformation)
         sm2.add_action(self.modules.books.Books)
-        sm2.add_action(self.modules.books.BookInfomation)
         sm2.add_action(self.modules.books.BooksLocation)
 
     def get_admin_main_items(self, ar):

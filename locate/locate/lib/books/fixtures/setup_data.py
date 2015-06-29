@@ -36,7 +36,7 @@ AUTHOR_DATA = '''
 V.P.Kale
 P.L.Deshpande
 Babasaheb Purandare
-Shivaji Satam
+Shivaji Sawant
 Vijay Tendulkar
 Kusumagraj
 Irawati Karve
@@ -92,8 +92,8 @@ Purandare Prakashan
 '''
 
 
-BOOKS_DATA = '''
-Mrutyunjay^Shivaji Sawant^Continental Prakashan^History^10
-Janata Raja^Babasaheb Purandare^Purandare Prakashan^History^10
-Vapurza^V.P.Kale^Mehta publishing house^Philosophy^10
+BOOK_INFO_DATA = '''
+Mrutyunjay^4^5^15^10
+Janata Raja^3^26^15^10
+Vapurza^1^12^22^10
 '''

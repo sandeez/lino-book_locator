@@ -113,25 +113,28 @@ class Publication(dd.Model):
         verbose_name_plural = 'Publications'
 
 
-class Book(dd.Model):
+class BookInfo(dd.Model):
     name = models.CharField('Name', max_length=50)
     author = models.ForeignKey(Author)
     publication = models.ForeignKey(Publication)
     category = models.ForeignKey(Category)
-    copies = models.IntegerField('number of copies', null=False, default=1)
+    copies = models.IntegerField('Total Copies', null=False, default=1)
 
     def __unicode__(self):
-        return self.name
+        return 'Name: {0} -> Author: {1} -> Publication: {2}'.format(
+                    self.name,
+                    self.author,
+                    self.publication)
 
     class Meta:
-        verbose_name = 'Book'
-        verbose_name_plural = 'Books'
+        verbose_name = 'Book Information'
+        verbose_name_plural = 'Books Information'
         unique_together = ('name', 'author', 'publication')
 
 
-class BookInfo(dd.Model):#BookCopy
+class Book(dd.Model):
     code = models.CharField(max_length=10, unique=True)
-    info = models.ForeignKey(Book)  # book
+    info = models.ForeignKey(BookInfo)
 
     def __unicode__(self):
         return 'Code: {0} -> Name: {1} -> Author: {2}'.format(
@@ -140,13 +143,13 @@ class BookInfo(dd.Model):#BookCopy
                     self.info.author)
 
     class Meta:
-        verbose_name = 'Book Information'
-        verbose_name_plural = 'Book Information'
+        verbose_name = 'Book'
+        verbose_name_plural = 'Books'
         unique_together = ('code', 'info')
 
 
 class BookLocation(dd.Model):
-    book = models.ForeignKey(BookInfo, unique=True)
+    book = models.ForeignKey(Book, unique=True)
     slot = models.ForeignKey(Slot, unique=True)
 
     def __unicode__(self):
