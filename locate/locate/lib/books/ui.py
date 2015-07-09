@@ -7,18 +7,38 @@ from .models import BookInfo
 
 class Floors(dd.Table):
     model = 'Floor'
-    column_names = 'number'
+    column_names = 'number id *'
+    detail_layout = """
+    id number
+    RoomsByFloor
+    """
 
 
 class Rooms(dd.Table):
     model = 'Room'
-    column_names = 'number name floor'
+    column_names = 'number name floor *'
+
+    detail_layout = """
+    id number name floor
+    BookshelvesByRoom
+    """
 
 
+class RoomsByFloor(Rooms):
+    """Shows the rooms for current master (which is a Floor instance)"""
+    master_key = "floor"
+    column_names = 'number name id'
+    
 
 class Bookshelves(dd.Table):
     model = 'Bookshelf'
     column_names = 'code room room__floor'
+
+
+class BookshelvesByRoom(Bookshelves):
+    master_key = "room"
+    column_names = 'code room id'
+    
 
 
 class Racks(dd.Table):
@@ -72,24 +92,47 @@ class Books(dd.Table):
     order_by = ['code', 'info', 'info__author', 'info__publication', 'info__category']
 
 
-class BooksLocation(dd.Table):
+class BookLocations(dd.Table):
     model = 'BookLocation'
     column_names = 'book slot'
     order_by = ['book']
-    detail_layout = '''
-    book slot
-    BooksLocationByBook BooksLocationBySlot
-    '''
+    parameters = dict(
+        author=dd.ForeignKey("books.Author", blank=True, null=True),
+        category=dd.ForeignKey("books.Category", blank=True, null=True),
+        floor=dd.ForeignKey("books.Floor", blank=True, null=True),
+        room=dd.ForeignKey("books.Room", blank=True, null=True),
+    )
+    # simple_parameters = ['author', 'category', 'floor', 'room']
+
+    @classmethod
+    def get_request_queryset(self, ar):
+        qs = super(BookLocations, self).get_request_queryset(ar)
+        pv = ar.param_values
+
+        if pv.author:
+            qs = qs.filter(book__info__author=pv.author)
+        if pv.category:
+            qs = qs.filter(book__info__category=pv.category)
+
+        if pv.room:
+            qs = qs.filter(slot__rack__bookshelf__room=pv.room)
+
+        if pv.floor:
+            qs = qs.filter(slot__rack__bookshelf__room__floor=pv.floor)
+        return qs
 
 
-class BooksLocationByBook(BooksLocation):
-    master_key = 'book'
-    column_names = 'book book__info'
 
 
-class BooksLocationBySlot(BooksLocation):
-    master_key = 'slot'
-    column_names = 'slot slot__rack'
+
+# class BooksLocationByBook(BooksLocation):
+#     master_key = 'book'
+#     column_names = 'book book__info'
+
+
+# class BooksLocationBySlot(BooksLocation):
+#     master_key = 'slot'
+#     column_names = 'slot slot__rack'
 
 
 class AvailableSlots(Slots):
