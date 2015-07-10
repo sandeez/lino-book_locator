@@ -93,13 +93,7 @@ Purandare Prakashan
 
 
 BOOK_INFO_DATA = '''
-Mrutyunjay^Shivaji Sawant^Continental Prakashan^History^10
-Janata Raja^Babasaheb Purandare^Purandare Prakashan^History^5
-Vapurza^V.P.Kale^Mehta publishing house^Philosophy^10
-'''
-
-
-BOOK_DATA = '''
-B1^Mrutyunjay
-B2^Janata Raja
+Mrutyunjay^4^5^15^10
+Janata Raja^3^26^15^10
+Vapurza^1^12^22^10
 '''

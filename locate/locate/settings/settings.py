@@ -23,7 +23,7 @@ class Site(Site):
         sm2.add_action(self.modules.books.Authors)
         sm2.add_action(self.modules.books.BookInformation)
         sm2.add_action(self.modules.books.Books)
-        sm2.add_action(self.modules.books.BooksLocation)
+        sm2.add_action(self.modules.books.BookLocations)
 
     def get_admin_main_items(self, ar):
         yield self.modules.books.BooksToBeTagged
